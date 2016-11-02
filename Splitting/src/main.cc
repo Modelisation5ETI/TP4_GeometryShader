@@ -16,7 +16,6 @@
 
 static void init();
 
-GLuint program;        // Programme classique, pour texturer le chat
 GLuint program_normal; // Programme avec les trois shaders, pour afficher les normales
 unsigned nb_indices;
 
@@ -309,8 +308,6 @@ int main(int argc, char *argv[])
   glewExperimental = true; glewInit(); glGetError();
   init();
 
-  // Création du programme "texture"
-  program = read_shader("shader.vert", "shader.frag",{"position","normal","tex_coord"});
   // Création du programme "normale"
   program_normal = read_shader("normal.vert", "normal.geom", "normal.frag",
                                {"position","normal","tex_coord"});

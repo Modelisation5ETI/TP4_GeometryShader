@@ -15,12 +15,14 @@ void main(void)
 {
   for (int i = 0; i < 3; i++)
   {
+    // Line start point
     gl_Position = projection * modelview * vec4(v_position[i], 1.0);
-
     EmitVertex();
+    // Line end point
     gl_Position = projection * modelview * vec4( v_position[i] + scaleNormal * v_normal[i], 1.0 );
     EmitVertex();
     
+    // Send line primitive
     EndPrimitive();
   }
 }

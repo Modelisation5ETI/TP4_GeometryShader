@@ -15,7 +15,6 @@
 
 static void init();
 
-GLuint program;        // Programme classique, pour texturer le chat
 GLuint program_normal; // Programme avec les trois shaders, pour afficher les normales
 unsigned nb_indices;
 
@@ -41,10 +40,12 @@ GlobalState state;
 \*---------------------------------------------------------------------------*/
 static void display_callback()
 {
+  // Culling point transform
   matrix cullingPointRotation;
   cullingPointRotation.rotate( angle, vec3( 0.0f, 1.0f, 0.0f) );
-  cullingPoint = cullingPointRotation.transform(middleCat + vec3(200.0f,0.0f,0.0f));
+  cullingPoint = cullingPointRotation.transform( middleCat + vec3( 200.0f, 0.0f, 0.0f ) );
   
+  // Uniform matrix
   matrix projection, look_at;
   matrix modelview;
 
@@ -57,22 +58,14 @@ static void display_callback()
 
   modelview = look_at * state.quat.get_matrix();
 
-  // Dessin du chat, normalement, texturé
-//   glUseProgram(program);                                                             PRINT_OPENGL_ERROR();
-//   glUniform1i(get_uni_loc(program, "tex"), 0);                                       PRINT_OPENGL_ERROR();
-//   glUniformMatrix4fv(get_uni_loc(program, "projection"), 1, GL_FALSE, projection.m); PRINT_OPENGL_ERROR();
-//   glUniformMatrix4fv(get_uni_loc(program, "modelview"), 1, GL_FALSE, modelview.m);   PRINT_OPENGL_ERROR();
-  // Décommentez la ligne suivante si vous voulez voir le chat texturé:
-//    glDrawElements(GL_TRIANGLES, nb_indices, GL_UNSIGNED_SHORT, 0);                    PRINT_OPENGL_ERROR();
-
-  // Dessin du chat, avecullingPointRotationc le programme "normal" comportant un shader de géométrie
+  // Dessin du chat, avec le programme "normal" comportant un shader de géométrie
   // Les données sont les mêmes, seuls les shaders et leurs éventuels paramètres changent
   glUseProgram(program_normal);                                                             PRINT_OPENGL_ERROR();
   glUniform1i(get_uni_loc(program_normal, "tex"), 0);  
   glUniformMatrix4fv(get_uni_loc(program_normal, "projection"), 1, GL_FALSE, projection.m); PRINT_OPENGL_ERROR();
-  glUniformMatrix4fv(get_uni_loc(program_normal, "modelview"), 1, GL_FALSE, modelview.m);          PRINT_OPENGL_ERROR();
-  glUniform4f(get_uni_loc(program_normal, "cullingPoint"),
-    cullingPoint.x, cullingPoint.y, cullingPoint.z, 1.0f); PRINT_OPENGL_ERROR();
+  glUniformMatrix4fv(get_uni_loc(program_normal, "modelview"), 1, GL_FALSE, modelview.m);   PRINT_OPENGL_ERROR();
+  glUniform4f( get_uni_loc(program_normal, "cullingPoint"),
+    cullingPoint.x, cullingPoint.y, cullingPoint.z, 1.0f );                                 PRINT_OPENGL_ERROR();
 
   glDrawElements(GL_TRIANGLES, nb_indices, GL_UNSIGNED_SHORT, 0);                           PRINT_OPENGL_ERROR();
 
@@ -297,8 +290,6 @@ int main(int argc, char *argv[])
   glewExperimental = true; glewInit(); glGetError();
   init();
 
-  // Création du programme "texture"
-  program = read_shader("shader.vert", "shader.frag",{"position","normal","tex_coord"});
   // Création du programme "normale"
   program_normal = read_shader("normal.vert", "normal.geom", "normal.frag",
                                {"position","normal","tex_coord"});
