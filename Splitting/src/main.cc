@@ -1,5 +1,4 @@
 // main.cc
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -22,8 +21,16 @@ GLuint program_normal; // Programme avec les trois shaders, pour afficher les no
 unsigned nb_indices;
 
 vec3 middleCat;
-float angle = 0.0f;
+float alpha = 0.5f;
 
+// Transform ID to perform different transform in the geometry shader
+enum TransformID{ 
+  center, // Eclatement par translation selon le centre de gravité
+  normal, // Eclatement par translation selon les normal
+  morpho };// Dilatation/Erosion
+
+TransformID transformID = center;
+  
 struct GlobalState
 {
   vec2       begin;          // Position de la souris.
@@ -53,21 +60,15 @@ static void display_callback()
   look_at.set_look_at(vec3(-1,30,103.5), vec3(0,16.9,-3.5), vec3(0,1,0));
 
   modelview = look_at * state.quat.get_matrix();
-// std::cout<<clock()<<std::endl;//WARNING: GESTION DU TEMPS AVEC GLUTTIMERFUNC plutot (cf autre tp)
-  // Dessin du chat, normalement, texturé
-//   glUseProgram(program);                                                             PRINT_OPENGL_ERROR();
-//   glUniform1i(get_uni_loc(program, "tex"), 0);                                       PRINT_OPENGL_ERROR();
-//   glUniformMatrix4fv(get_uni_loc(program, "projection"), 1, GL_FALSE, projection.m); PRINT_OPENGL_ERROR();
-//   glUniformMatrix4fv(get_uni_loc(program, "modelview"), 1, GL_FALSE, modelview.m);   PRINT_OPENGL_ERROR();
-  // Décommentez la ligne suivante si vous voulez voir le chat texturé:
-//    glDrawElements(GL_TRIANGLES, nb_indices, GL_UNSIGNED_SHORT, 0);                    PRINT_OPENGL_ERROR();
-
-  // Dessin du chat, avecullingPointRotationc le programme "normal" comportant un shader de géométrie
+  
+  // Dessin du chat, avec le programme "normal" comportant un shader de géométrie
   // Les données sont les mêmes, seuls les shaders et leurs éventuels paramètres changent
   glUseProgram(program_normal);                                                             PRINT_OPENGL_ERROR();
   glUniform1i(get_uni_loc(program_normal, "tex"), 0);  
   glUniformMatrix4fv(get_uni_loc(program_normal, "projection"), 1, GL_FALSE, projection.m); PRINT_OPENGL_ERROR();
-  glUniformMatrix4fv(get_uni_loc(program_normal, "modelview"), 1, GL_FALSE, modelview.m);          PRINT_OPENGL_ERROR();
+  glUniformMatrix4fv(get_uni_loc(program_normal, "modelview"), 1, GL_FALSE, modelview.m);   PRINT_OPENGL_ERROR();
+  glUniform1i(get_uni_loc( program_normal, "transformID"), transformID );                   PRINT_OPENGL_ERROR();
+  glUniform1f(get_uni_loc( program_normal, "alpha"), alpha );                               PRINT_OPENGL_ERROR();
 
   glDrawElements(GL_TRIANGLES, nb_indices, GL_UNSIGNED_SHORT, 0);                           PRINT_OPENGL_ERROR();
 
@@ -250,6 +251,20 @@ static void keyboard_callback(unsigned char key, int, int)
     case 'Q':
     case 27:
       exit(0);
+      break;
+    // TransformID selection
+    case '0'://Center
+      transformID = center;
+      glutPostRedisplay();
+      break;
+    case '1'://Normal
+      transformID = normal;
+      glutPostRedisplay();
+      break;
+    case '2'://Dilate/Erode
+      transformID = morpho;
+      glutPostRedisplay();
+      break;
   }
 }
 
@@ -258,13 +273,14 @@ static void keyboard_callback(unsigned char key, int, int)
 \*****************************************************************************/
 static void special_callback(int key, int,int)
 {
+  float e = 0.1f;
   switch (key)
   {
     case GLUT_KEY_UP:
-      angle += 1.0f;
+      alpha += e;
       break;
     case GLUT_KEY_DOWN:
-      angle -= 1.0f;
+      alpha -= e;
       break;
   }
   glutPostRedisplay();
