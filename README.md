@@ -40,7 +40,7 @@ qtcreator ../TP4_GeometryShader
  Use arrows UP/DOWN to increase/decrease the normals size.
  
  - ### Culling
- <img src="./Screenshots/culling.png" alt="culling" width="200" height="200" />
+ <img src="./Screenshots/culling.png" alt="culling" width="200" height="220" />
 
  ```
  ./_Culling
@@ -50,6 +50,9 @@ qtcreator ../TP4_GeometryShader
  Use arrow UP or DOWN to change the culling point position around the mesh.
 
  - ### Splitting
+ <img src="./Screenshots/GravityCenter.png" alt="GravityCenter" width="200" height="200" />
+ <img src="./Screenshots/Normal.png" alt="Normal" width="200" height="200" />
+ <img src="./Screenshots/Dilate.png" alt="Dilate" width="200" height="200" />
  <img src="./Screenshots/shrink.png" alt="shrink" width="200" height="200" />
 
  ```
@@ -57,3 +60,12 @@ qtcreator ../TP4_GeometryShader
  ```
 Process different transformation using normals. Vertex and triangles are
 modified by the geometry shader.
+
+Use arrows UP/DOWN to modify the alpha parameter in order to increase the transform effect.
+
+Use 0,1, or 2 to process different transforms :
+ - 0 : Translate vertices towards the triangle center. 
+ - 1 : Translate triangle along their normal.
+ - 2 : Erode/Dilate the mesh.
+
+
